@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Beachonhouse Garden Town Recycling Machine</title>
+<style>
+  body {
+    font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: radial-gradient(1000px 600px at 50% -10%, #f0f6ff 0%, #e3edf7 40%, #dde7f2 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+    padding: 28px 16px 40px;
+  }
+
+  .header {
+    width: 100%;
+    max-width: 980px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    background: rgba(255,255,255,0.7);
+    backdrop-filter: blur(6px);
+    border: 1px solid rgba(0,0,0,0.06);
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+  }
+
+  .header-left { display: flex; flex-direction: column; gap: 2px; align-items: flex-start; }
+  .credits { color:#3b5568; font-weight:600; font-size: 13px; }
+  .brand { font-weight: 800; color: #123047; letter-spacing: 0.4px; }
+  .subbrand { color: #3b5568; font-weight: 600; font-size: 14px; }
+
+  .layout {
+    display: flex;
+    align-items: flex-start;
+    gap: 24px;
+    width: 100%;
+    max-width: 980px;
+    justify-content: center;
+  }
+
+  .machine {
+    width: 440px;
+    height: 760px;
+    background: linear-gradient(180deg, #cfd4da 0%, #b9c0c6 100%);
+    border: 6px solid #3f4b57;
+    border-radius: 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 28px;
+    box-shadow: 0 24px 40px rgba(0,0,0,0.16), 0 10px 18px rgba(0,0,0,0.10);
+  }
+
+  /* Screen */
+  .screen {
+    width: 400px;
+    height: 260px;
+    background: linear-gradient(180deg, #9fd6f2 0%, #7dbfdd 100%);
+    border: 3px solid #1f3b47;
+    border-radius: 10px;
+    margin-bottom: 30px;
+    box-shadow: inset 0 10px 20px rgba(0,0,0,0.18), 0 8px 24px rgba(0,0,0,0.12);
+    position: relative;
+  }
+
+  .screen-text {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 12px;
+    text-align: center;
+    color: #0b2e3a;
+    font-weight: 700;
+    font-size: 22px;
+    text-shadow: 0 1px 0 rgba(255,255,255,0.35);
+  }
+
+  /* Side items panel */
+  .items-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 12px;
+    background: linear-gradient(180deg, #f9fbff 0%, #eef5ff 100%);
+    border: 1px solid #c8d6e5;
+    border-radius: 12px;
+    min-width: 180px;
+    box-shadow: 0 12px 20px rgba(0,0,0,0.08);
+  }
+
+  .items-panel-title { font-weight: 700; color: #263238; text-align: center; margin-bottom: 4px; }
+
+  .item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    background: white;
+    border-radius: 10px;
+    border: 2px solid currentColor;
+    color: #607d8b;
+    cursor: grab;
+    user-select: none;
+    box-shadow: 0 6px 14px rgba(0,0,0,0.08);
+    transition: transform 0.15s ease, box-shadow 0.2s ease;
+  }
+  .item:active { cursor: grabbing; }
+  .item:hover { transform: translateY(-2px); box-shadow: 0 10px 18px rgba(0,0,0,0.12); }
+
+  .item-badge {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: currentColor;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.25);
+  }
+
+  .item.bottle { color: #ffd54f; }
+  .item.wrapper { color: #4fc3f7; }
+  .item.metal { color: #66bb6a; }
+
+  .actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+    width: 100%;
+  }
+
+  .btn {
+    background: #264653;
+    color: #fff;
+    border: none;
+    padding: 12px 16px;
+    border-radius: 6px;
+    font-size: 15px;
+    cursor: pointer;
+    transition: transform 0.06s ease, background 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 2px 0 rgba(0,0,0,0.4);
+  }
+
+  .btn:hover, .btn:focus { outline: none; background: #2e5a69; transform: translateY(-1px); }
+  .btn.secondary { background: #457b9d; }
+  .btn.warn { background: #e76f51; }
+
+  /* Keypad Section */
+  .keypad {
+    display: grid;
+    grid-template-columns: repeat(3, 60px);
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+
+  .keypad button {
+    background: linear-gradient(180deg, #4a4a4a 0%, #373737 100%);
+    color: white;
+    border: none;
+    padding: 14px;
+    border-radius: 10px;
+    font-size: 18px;
+    cursor: pointer;
+    transition: transform 0.06s ease, background 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 2px 0 #222, 0 8px 16px rgba(0,0,0,0.18);
+  }
+
+  .keypad button:hover,
+  .keypad button:focus {
+    outline: none;
+    background: #4a4a4a;
+    transform: translateY(-1px);
+    box-shadow: 0 3px 0 #222;
+  }
+
+  /* Item Slot */
+  .slot {
+    width: 320px;
+    height: 56px;
+    background: linear-gradient(180deg, #2b2b2b 0%, #141414 100%);
+    border-radius: 8px;
+    margin-bottom: 36px;
+    box-shadow: inset 0 8px 12px rgba(0,0,0,0.35), 0 4px 8px rgba(0,0,0,0.15);
+  }
+
+  /* Bins */
+  .bin-section {
+    width: 90%;
+    height: 210px;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .bin {
+    width: 30%;
+    height: 100%;
+    border-radius: 10px;
+    border: 3px solid #333;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    font-weight: bold;
+    padding-bottom: 10px;
+    font-size: 16px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .bin { transition: transform 0.2s ease, box-shadow 0.25s ease; }
+  #plastic.active { box-shadow: 0 0 0 4px rgba(255,213,79,0.55), 0 10px 18px rgba(0,0,0,0.25); transform: translateY(-3px); }
+  #paper.active { box-shadow: 0 0 0 4px rgba(79,195,247,0.55), 0 10px 18px rgba(0,0,0,0.25); transform: translateY(-3px); }
+  #metal.active { box-shadow: 0 0 0 4px rgba(207,216,220,0.7), 0 10px 18px rgba(0,0,0,0.25); transform: translateY(-3px); }
+
+  #plastic { background: linear-gradient(180deg, #ffe37a 0%, #ffd54f 100%); color: #000; }
+  #paper { background: linear-gradient(180deg, #7bd7ff 0%, #4fc3f7 100%); }
+  #metal { background: linear-gradient(180deg, #e5ecef 0%, #cfd8dc 100%); color: #000; }
+
+  .bin-badge {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: rgba(0,0,0,0.7);
+    color: #fff;
+    font-weight: 700;
+    font-size: 12px;
+    padding: 4px 8px;
+    border-radius: 999px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.25);
+  }
+
+  /* Holes Section */
+  .holes {
+    width: 90%;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 30px;
+  }
+
+  /* Proportional sizing for holes */
+  :root { --hole-size: 110px; --hole-inner: 0.72; }
+
+  .hole {
+    width: var(--hole-size);
+    height: var(--hole-size);
+    border-radius: 50%;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .hole { cursor: pointer; }
+  .hole:hover .hole-ring { box-shadow: 0 8px 18px rgba(0,0,0,0.22), 0 0 0 6px rgba(0,0,0,0.05); }
+  .hole.drag-over .hole-ring { box-shadow: 0 0 0 6px currentColor, 0 10px 20px rgba(0,0,0,0.24); }
+
+  .hole-ring {
+    width: var(--hole-size);
+    height: var(--hole-size);
+    border-radius: 50%;
+    border: 6px solid currentColor;
+    display: grid;
+    place-items: center;
+    box-shadow: 0 6px 12px rgba(0,0,0,0.15), inset 0 2px 6px rgba(255,255,255,0.5);
+    background: #e9ecef;
+  }
+
+  .hole-inner {
+    width: calc(var(--hole-size) * var(--hole-inner));
+    height: calc(var(--hole-size) * var(--hole-inner));
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #2a2a2a, #111 60%, #000 100%);
+    box-shadow: inset 0 10px 18px rgba(0,0,0,0.55);
+  }
+
+  .hole-label {
+    font-size: 14px;
+    font-weight: bold;
+    color: #1a1a1a;
+  }
+
+  @keyframes pop {
+    0% { transform: translateY(0) scale(1); }
+    30% { transform: translateY(-4px) scale(1.02); }
+    60% { transform: translateY(-2px) scale(1.005); }
+    100% { transform: translateY(0) scale(1); }
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 480px) {
+    .layout { flex-direction: column; align-items: stretch; gap: 16px; }
+    .machine { width: 95vw; height: auto; padding: 22px 0; }
+    .screen { width: 300px; height: 180px; }
+    .screen-text { font-size: 18px; }
+    .keypad { grid-template-columns: repeat(3, 50px); gap: 10px; }
+    .keypad button { padding: 12px; font-size: 16px; }
+    .slot { width: 280px; height: 50px; }
+    .holes { margin-bottom: 24px; }
+    .hole, .hole-ring { width: 80px; height: 80px; }
+    .hole-inner { width: 56px; height: 56px; }
+    .hole-label { font-size: 12px; }
+    .bin-section { height: 180px; }
+    .btn { padding: 10px 14px; font-size: 14px; }
+    .items-panel { min-width: unset; }
+  }
+
+  /* Specific hole colors */
+  .hole.bottle { color: #ffd54f; } /* yellow */
+  .hole.wrapper { color: #4fc3f7; } /* blue */
+  .hole.metal { color: #66bb6a; }   /* green */
+</style>
+</head>
+<body>
+
+  <div class="header">
+    <div class="header-left">
+      <div class="credits" style="font-size: 12px; color: #666; margin-bottom: 4px;">Visual Representation Made by Abdul Rehman Goraya 9C RED</div>
+      <div class="brand">Beachonhouse Garden Town Recycling Machine</div>
+    </div>
+    <div class="subbrand">Reduce • Reuse • Recycle <button class="btn" id="adminBtn" type="button" style="margin-left:8px;">Admin</button></div>
+  </div>
+
+<div class="layout">
+
+  <div class="machine">
+
+    <div class="screen"><div class="screen-text" id="display" aria-live="polite">Enter Student ID with keypad, then press #</div> </div>
+
+    <div class="keypad">
+      <button>1</button><button>2</button><button>3</button>
+      <button>4</button><button>5</button><button>6</button>
+      <button>7</button><button>8</button><button>9</button>
+      <button>*</button><button>0</button><button>#</button>
+    </div>
+
+    <div class="slot"></div>
+
+    <div class="holes" aria-label="recycling input holes">
+      <div class="hole bottle" aria-label="bottles">
+        <div class="hole-ring">
+          <div class="hole-inner"></div>
+        </div>
+        <div class="hole-label">BOTTLES</div>
+      </div>
+      <div class="hole wrapper" aria-label="wrappers">
+        <div class="hole-ring">
+          <div class="hole-inner"></div>
+        </div>
+        <div class="hole-label">WRAPPERS</div>
+      </div>
+      <div class="hole metal" aria-label="metal cans">
+        <div class="hole-ring">
+          <div class="hole-inner"></div>
+        </div>
+        <div class="hole-label">METAL CANS</div>
+      </div>
+    </div>
+
+    <div class="bin-section">
+      <div class="bin" id="plastic">PLASTIC <span class="bin-badge" id="count-plastic">0</span></div>
+      <div class="bin" id="paper">PAPER <span class="bin-badge" id="count-paper">0</span></div>
+      <div class="bin" id="metal">METAL <span class="bin-badge" id="count-metal">0</span></div>
+    </div>
+
+  </div>
+
+  <div class="items-panel" aria-label="recyclable items">
+    <div class="items-panel-title">Drag Items</div>
+    <div class="item bottle" draggable="true" data-type="bottle"><span class="item-badge"></span><span>Bottle</span></div>
+    <div class="item wrapper" draggable="true" data-type="wrapper"><span class="item-badge"></span><span>Wrapper</span></div>
+    <div class="item metal" draggable="true" data-type="metal"><span class="item-badge"></span><span>Metal Can</span></div>
+  </div>
+
+</div>
+
+</body>
+</html>
+
+<script>
+  (function() {
+    var display = document.getElementById('display');
+    var buffer = '';
+    var state = 'await_id';
+    var currentStudentId = null;
+    var currentStudent = null;
+    var pendingType = null;
+    var draggingType = null;
+    var adminPinFirst = null;
+
+    var STUDENTS = {
+      '12345': { name: 'Ibrahim Jawad', class: '9C', section: 'RED', house: 'Dolphins' },
+      '10001': { name: 'Ali Arham Khan', class: '9C', section: 'RED', house: 'Markhor' },
+      '24680': { name: 'Abdullah Inam Butt Sahab', class: '9C', section: 'RED', house: 'Dolphins' },
+      '12345678': { name: 'Abdul Rehman Goraya', class: '9C', section: 'RED', house: 'Leopards' }
+    };
+
+    function loadStudents() {
+      var j = localStorage.getItem('students');
+      if (j) {
+        try { var parsed = JSON.parse(j); if (parsed && typeof parsed === 'object') return parsed; } catch(e) {}
+      }
+      return Object.assign({}, STUDENTS);
+    }
+    function saveStudents(map) {
+      try { localStorage.setItem('students', JSON.stringify(map)); } catch(e) {}
+    }
+    var studentsMap = loadStudents();
+
+    function getAdminPin() {
+      return localStorage.getItem('adminPin') || '0000';
+    }
+    function setAdminPin(pin) {
+      localStorage.setItem('adminPin', pin);
+    }
+
+    function getPoints(id) {
+      var v = localStorage.getItem('points:' + id);
+      return v ? parseFloat(v) : 0;
+    }
+    function setPoints(id, pts) {
+      localStorage.setItem('points:' + id, String(pts));
+    }
+
+    // Aggregate bin counts (machine-wide)
+    function getCount(binId) {
+      var v = localStorage.getItem('count:' + binId);
+      return v ? parseInt(v, 10) : 0;
+    }
+    function setCount(binId, val) {
+      localStorage.setItem('count:' + binId, String(val));
+    }
+    function incrementBin(binId) {
+      setCount(binId, getCount(binId) + 1);
+      updateBinBadges();
+    }
+    function updateBinBadges() {
+      var cp = document.getElementById('count-plastic');
+      var cpa = document.getElementById('count-paper');
+      var cm = document.getElementById('count-metal');
+      if (cp) cp.textContent = String(getCount('plastic'));
+      if (cpa) cpa.textContent = String(getCount('paper'));
+      if (cm) cm.textContent = String(getCount('metal'));
+    }
+
+    function setDisplay(html) {
+      display.innerHTML = html;
+    }
+
+    function showPromptEnterId(message) {
+      state = 'await_id';
+      buffer = '';
+      setDisplay(message || 'Enter Student ID with keypad, then press #');
+    }
+
+    function lookupStudent(id) {
+      return Object.prototype.hasOwnProperty.call(studentsMap, id) ? studentsMap[id] : null;
+    }
+
+    function showStudentInfo() {
+      var pts = getPoints(currentStudentId).toFixed(1);
+      setDisplay(
+        '<div class="actions">' +
+          '<div>Welcome, ' + currentStudent.name + '</div>' +
+          '<div>Class ' + currentStudent.class + ' • Section ' + currentStudent.section + ' • House ' + currentStudent.house + '</div>' +
+          '<div>Current Points: ' + pts + '</div>' +
+          '<button class="btn" id="goMenu">Continue</button>' +
+        '</div>'
+      );
+      document.getElementById('goMenu').addEventListener('click', showMainMenu);
+      state = 'info';
+    }
+
+    function showMainMenu() {
+      state = 'menu';
+      setDisplay(
+        '<div class="actions">' +
+          '<button class="btn" id="check">Check Current Points</button>' +
+          '<button class="btn secondary" id="redeem">Redeem Points</button>' +
+          '<button class="btn" id="recycle">Recycle Trash</button>' +
+          '<button class="btn" id="switch">Switch Student</button>' +
+        '</div>'
+      );
+      document.getElementById('check').addEventListener('click', showPoints);
+      document.getElementById('redeem').addEventListener('click', showRedeem);
+      document.getElementById('recycle').addEventListener('click', showRecycleSelect);
+      document.getElementById('switch').addEventListener('click', function(){ currentStudentId=null; currentStudent=null; showPromptEnterId('Switching user. Enter Student ID and press #');});
+    }
+
+    function showPoints() {
+      state = 'points';
+      var pts = getPoints(currentStudentId).toFixed(1);
+      setDisplay('<div class="actions"><div>Your Points: ' + pts + '</div><button class="btn" id="backMenu">Back</button></div>');
+      document.getElementById('backMenu').addEventListener('click', showMainMenu);
+    }
+
+    function showRedeem() {
+      state = 'redeem';
+      var pts = getPoints(currentStudentId);
+      setDisplay(
+        '<div class="actions">' +
+          '<div>Available: ' + pts.toFixed(1) + ' pts</div>' +
+          '<button class="btn secondary" id="redeem5">Redeem 5</button>' +
+          '<button class="btn secondary" id="redeem10">Redeem 10</button>' +
+          '<button class="btn" id="backMenu">Back</button>' +
+        '</div>'
+      );
+      document.getElementById('backMenu').addEventListener('click', showMainMenu);
+      function doRedeem(n){
+        var p = getPoints(currentStudentId);
+        if (p >= n) { setPoints(currentStudentId, p - n); setDisplay('<div class="actions"><div>Redeemed ' + n + ' pts</div><button class="btn" id="ok">OK</button></div>'); document.getElementById('ok').addEventListener('click', showMainMenu); }
+        else { setDisplay('<div class="actions"><div>Not enough points</div><button class="btn" id="ok">OK</button></div>'); document.getElementById('ok').addEventListener('click', showRedeem); }
+      }
+      document.getElementById('redeem5').addEventListener('click', function(){ doRedeem(5); });
+      document.getElementById('redeem10').addEventListener('click', function(){ doRedeem(10); });
+    }
+
+    function showRecycleSelect() {
+      state = 'recycle_select';
+      pendingType = null;
+      setDisplay(
+        '<div class="actions">' +
+          '<div>Select Trash Type</div>' +
+          '<div style="display:flex; gap:8px;">' +
+            '<button class="btn" id="chooseBottle">Bottle (1)</button>' +
+            '<button class="btn" id="chooseWrapper">Wrapper (0.5)</button>' +
+            '<button class="btn" id="chooseMetal">Metal Can (2)</button>' +
+          '</div>' +
+          '<button class="btn" id="backMenu">Back</button>' +
+        '</div>'
+      );
+      document.getElementById('backMenu').addEventListener('click', showMainMenu);
+      document.getElementById('chooseBottle').addEventListener('click', function(){ pendingType='bottle'; showRecycleInsert();});
+      document.getElementById('chooseWrapper').addEventListener('click', function(){ pendingType='wrapper'; showRecycleInsert();});
+      document.getElementById('chooseMetal').addEventListener('click', function(){ pendingType='metal'; showRecycleInsert();});
+    }
+
+    function showRecycleInsert() {
+      state = 'recycle_wait_insert';
+      var label = pendingType === 'bottle' ? 'Bottle' : (pendingType === 'wrapper' ? 'Wrapper' : 'Metal Can');
+      var msg = pendingType === 'bottle' ? 'Insert into BOTTLES (yellow)' : (pendingType === 'wrapper' ? 'Insert into WRAPPERS (blue)' : 'Insert into METAL CANS (green)');
+      setDisplay('<div class="actions">\
+        <div>Picked Item: <strong>' + label + '</strong></div>\
+        <div>' + msg + '</div>\
+        <div>(Use matching hole)</div>\
+        <button class="btn" id="cancel">Cancel</button>\
+      </div>');
+      document.getElementById('cancel').addEventListener('click', showMainMenu);
+    }
+
+    function showAdminLogin() {
+      state = 'await_admin_pin';
+      buffer = '';
+      setDisplay('Enter Admin PIN then press #');
+    }
+
+    function showAdminMenu() {
+      state = 'admin_menu';
+      setDisplay(
+        '<div class="actions">' +
+          '<button class="btn" id="stats">View Machine Stats</button>' +
+          '<button class="btn" id="reset">Reset Machine Data</button>' +
+          '<button class="btn secondary" id="students">Manage Students</button>' +
+          '<button class="btn secondary" id="pin">Set Admin PIN</button>' +
+          '<button class="btn" id="exit">Exit Admin</button>' +
+        '</div>'
+      );
+      document.getElementById('stats').addEventListener('click', showAdminStats);
+      document.getElementById('reset').addEventListener('click', showAdminReset);
+      document.getElementById('students').addEventListener('click', showStudentManageMenu);
+      document.getElementById('pin').addEventListener('click', showSetAdminPinNew);
+      document.getElementById('exit').addEventListener('click', function(){ showPromptEnterId('Exiting Admin. Enter Student ID and press #'); });
+    }
+
+    function showAdminStats() {
+      state = 'admin_stats';
+      var plastic = getCount('plastic');
+      var paper = getCount('paper');
+      var metalC = getCount('metal');
+      var ids = Object.keys(studentsMap);
+      var totalStudents = ids.length;
+      var totalPoints = ids.reduce(function(sum, id){ return sum + getPoints(id); }, 0);
+      setDisplay(
+        '<div class="actions">' +
+          '<div>Plastic: ' + plastic + '</div>' +
+          '<div>Paper: ' + paper + '</div>' +
+          '<div>Metal: ' + metalC + '</div>' +
+          '<div>Students: ' + totalStudents + '</div>' +
+          '<div>Total Points: ' + totalPoints.toFixed(1) + '</div>' +
+          '<button class="btn" id="back">Back</button>' +
+        '</div>'
+      );
+      document.getElementById('back').addEventListener('click', showAdminMenu);
+    }
+
+    function showAdminReset() {
+      state = 'admin_reset';
+      setDisplay(
+        '<div class="actions">' +
+          '<button class="btn warn" id="resetCounts">Reset Bin Counters</button>' +
+          '<button class="btn warn" id="resetPoints">Reset All Student Points</button>' +
+          '<button class="btn warn" id="resetAll">Factory Reset (Counts, Points, Students)</button>' +
+          '<button class="btn" id="back">Back</button>' +
+        '</div>'
+      );
+      document.getElementById('back').addEventListener('click', showAdminMenu);
+      document.getElementById('resetCounts').addEventListener('click', function(){
+        setCount('plastic', 0); setCount('paper', 0); setCount('metal', 0); updateBinBadges();
+        setDisplay('<div class="actions"><div>Counters reset.</div><button class="btn" id="ok">OK</button></div>');
+        document.getElementById('ok').addEventListener('click', showAdminMenu);
+      });
+      document.getElementById('resetPoints').addEventListener('click', function(){
+        Object.keys(studentsMap).forEach(function(id){ setPoints(id, 0); });
+        setDisplay('<div class="actions"><div>All student points reset.</div><button class="btn" id="ok">OK</button></div>');
+        document.getElementById('ok').addEventListener('click', showAdminMenu);
+      });
+      document.getElementById('resetAll').addEventListener('click', function(){
+        if (window.confirm('Factory reset? This clears counts, all points, and restores default students.')) {
+          setCount('plastic', 0); setCount('paper', 0); setCount('metal', 0); updateBinBadges();
+          Object.keys(studentsMap).forEach(function(id){ setPoints(id, 0); });
+          studentsMap = Object.assign({}, STUDENTS); saveStudents(studentsMap);
+          setDisplay('<div class="actions"><div>Factory reset complete.</div><button class="btn" id="ok">OK</button></div>');
+          document.getElementById('ok').addEventListener('click', showAdminMenu);
+        }
+      });
+    }
+
+    function showStudentManageMenu() {
+      state = 'admin_students';
+      setDisplay(
+        '<div class="actions">' +
+          '<button class="btn" id="list">View Students</button>' +
+          '<button class="btn" id="add">Add Student</button>' +
+          '<button class="btn" id="remove">Remove Student</button>' +
+          '<button class="btn" id="resetOne">Reset Student Points</button>' +
+          '<button class="btn" id="back">Back</button>' +
+        '</div>'
+      );
+      document.getElementById('back').addEventListener('click', showAdminMenu);
+      document.getElementById('list').addEventListener('click', showStudentList);
+      document.getElementById('add').addEventListener('click', function(){
+        showAdminAddStudentId();
+      });
+      document.getElementById('remove').addEventListener('click', function(){
+        showAdminRemoveStudentId();
+      });
+      document.getElementById('resetOne').addEventListener('click', function(){
+        showAdminResetPointsById();
+      });
+    }
+
+    function showAdminResetPointsById() {
+      state = 'admin_reset_points_id';
+      buffer = '';
+      setDisplay('Enter Student ID to reset, then press #');
+    }
+
+    function showAdminAddStudentId() {
+      state = 'admin_add_student_id';
+      buffer = '';
+      setDisplay('Enter new Student ID, then press #');
+    }
+
+    function showAdminRemoveStudentId() {
+      state = 'admin_remove_student_id';
+      buffer = '';
+      setDisplay('Enter Student ID to remove, then press #');
+    }
+
+    function showAdminAddStudentDetails(newId) {
+      var name = window.prompt('Enter name'); if (!name) { showStudentManageMenu(); return; }
+      var cls = window.prompt('Enter class'); if (!cls) { showStudentManageMenu(); return; }
+      var sec = window.prompt('Enter section'); if (!sec) { showStudentManageMenu(); return; }
+      var house = window.prompt('Enter house'); if (!house) { showStudentManageMenu(); return; }
+      studentsMap[newId] = { name: name, class: cls, section: sec, house: house };
+      saveStudents(studentsMap);
+      setDisplay('<div class="actions"><div>Student added: ' + newId + '</div><button class="btn" id="ok">OK</button></div>');
+      document.getElementById('ok').addEventListener('click', showStudentManageMenu);
+    }
+
+    function showStudentList() {
+      state = 'admin_students_list';
+      var ids = Object.keys(studentsMap);
+      ids.sort();
+      var rows = ids.map(function(id){
+        var s = studentsMap[id];
+        var pts = getPoints(id).toFixed(1);
+        return '<tr><td style="padding:6px 8px; font-weight:600;">' + id + '</td>' +
+               '<td style="padding:6px 8px;">' + s.name + '</td>' +
+               '<td style="padding:6px 8px;">' + s.class + '-' + s.section + '</td>' +
+               '<td style="padding:6px 8px;">' + s.house + '</td>' +
+               '<td style="padding:6px 8px; text-align:right;">' + pts + '</td></tr>';
+      }).join('');
+      if (!rows) rows = '<tr><td colspan="5" style="padding:10px; text-align:center;">No students found</td></tr>';
+      setDisplay(
+        '<div class="actions" style="align-items:stretch;">' +
+          '<div style="font-weight:700; text-align:center; margin-bottom:6px;">Students</div>' +
+          '<div style="max-height:220px; overflow:auto; background:#fff; border:1px solid #c8d6e5; border-radius:10px; box-shadow:0 6px 14px rgba(0,0,0,0.08);">' +
+            '<table style="width:100%; border-collapse:collapse; font-size:14px;">' +
+              '<thead><tr style="background:#f5f8fb; text-align:left;">' +
+                '<th style="padding:8px;">ID</th>' +
+                '<th style="padding:8px;">Name</th>' +
+                '<th style="padding:8px;">Class-Section</th>' +
+                '<th style="padding:8px;">House</th>' +
+                '<th style="padding:8px; text-align:right;">Points</th>' +
+              '</tr></thead>' +
+              '<tbody>' + rows + '</tbody>' +
+            '</table>' +
+          '</div>' +
+          '<button class="btn" id="back">Back</button>' +
+        '</div>'
+      );
+      document.getElementById('back').addEventListener('click', showStudentManageMenu);
+    }
+
+    function showSetAdminPinNew() {
+      state = 'admin_set_pin_new';
+      buffer = '';
+      adminPinFirst = null;
+      setDisplay('Enter new Admin PIN then press #');
+    }
+
+    function showSetAdminPinConfirm(first) {
+      state = 'admin_set_pin_confirm';
+      buffer = '';
+      adminPinFirst = first;
+      setDisplay('Confirm Admin PIN then press #');
+    }
+
+    // Keypad
+    var buttons = document.querySelectorAll('.keypad button');
+    buttons.forEach(function(btn) {
+      var key = (btn.textContent || '').trim();
+      btn.addEventListener('click', function() {
+        if (key === '*') {
+          buffer = '';
+          if (state === 'await_id') setDisplay('Enter Student ID with keypad, then press #');
+          else if (state === 'admin_add_student_id') setDisplay('Enter new Student ID, then press #');
+          else if (state === 'admin_remove_student_id') setDisplay('Enter Student ID to remove, then press #');
+          else if (state === 'admin_reset_points_id') setDisplay('Enter Student ID to reset, then press #');
+          else if (state === 'admin_set_pin_new') setDisplay('Enter new Admin PIN then press #');
+          else if (state === 'admin_set_pin_confirm') setDisplay('Confirm Admin PIN then press #');
+          else if (state === 'await_admin_pin') setDisplay('Enter Admin PIN then press #');
+          else display.textContent = 'Cleared';
+          return;
+        }
+        if (key === '#') {
+          if (state === 'admin_set_pin_new') {
+            if (!buffer) { setDisplay('Enter new Admin PIN then press #'); return; }
+            var first = buffer; buffer = '';
+            showSetAdminPinConfirm(first);
+            return;
+          }
+          if (state === 'admin_set_pin_confirm') {
+            if (!buffer) { setDisplay('Confirm Admin PIN then press #'); return; }
+            var second = buffer; buffer = '';
+            if (adminPinFirst !== null && second === adminPinFirst) {
+              setAdminPin(second);
+              adminPinFirst = null;
+              setDisplay('<div class="actions"><div>Admin PIN updated.</div><button class="btn" id="ok">OK</button></div>');
+              document.getElementById('ok').addEventListener('click', showAdminMenu);
+            } else {
+              adminPinFirst = null;
+              setDisplay('<div class="actions"><div>PINs do not match.</div><button class="btn" id="retry">OK</button></div>');
+              document.getElementById('retry').addEventListener('click', function(){ showSetAdminPinNew(); });
+            }
+            return;
+          }
+          if (state === 'admin_add_student_id') {
+            if (!buffer) { setDisplay('Enter new Student ID, then press #'); return; }
+            if (studentsMap[buffer]) {
+              setDisplay('<div class="actions"><div>ID already exists.</div><button class="btn" id="retry">OK</button></div>');
+              document.getElementById('retry').addEventListener('click', function(){ showAdminAddStudentId(); });
+              buffer = '';
+              return;
+            }
+            var newId = buffer; buffer = '';
+            showAdminAddStudentDetails(newId);
+            return;
+          }
+          if (state === 'admin_remove_student_id') {
+            if (!buffer) { setDisplay('Enter Student ID to remove, then press #'); return; }
+            if (!studentsMap[buffer]) {
+              setDisplay('<div class="actions"><div>ID not found.</div><button class="btn" id="retry">OK</button></div>');
+              document.getElementById('retry').addEventListener('click', function(){ showAdminRemoveStudentId(); });
+              buffer = '';
+              return;
+            }
+            var delId = buffer; buffer = '';
+            delete studentsMap[delId]; saveStudents(studentsMap);
+            setDisplay('<div class="actions"><div>Student removed: ' + delId + '</div><button class="btn" id="ok">OK</button></div>');
+            document.getElementById('ok').addEventListener('click', showStudentManageMenu);
+            return;
+          }
+          if (state === 'admin_reset_points_id') {
+            if (!buffer) { setDisplay('Enter Student ID to reset, then press #'); return; }
+            var stu = lookupStudent(buffer);
+            if (!stu) {
+              setDisplay('<div class="actions"><div>ID not found.</div><button class="btn" id="retry">OK</button></div>');
+              document.getElementById('retry').addEventListener('click', function(){ showAdminResetPointsById(); });
+              buffer = '';
+              return;
+            }
+            setPoints(buffer, 0);
+            var doneId = buffer; buffer = '';
+            setDisplay('<div class="actions"><div>Points reset for: ' + doneId + '</div><button class="btn" id="ok">OK</button></div>');
+            document.getElementById('ok').addEventListener('click', showStudentManageMenu);
+            return;
+          }
+          if (state === 'await_admin_pin') {
+            if (!buffer) { setDisplay('Enter Admin PIN then press #'); return; }
+            if (buffer === getAdminPin()) { buffer=''; showAdminMenu(); return; }
+            setDisplay('<div class="actions"><div>Invalid PIN.</div><button class="btn" id="retry">OK</button></div>');
+            document.getElementById('retry').addEventListener('click', function(){ showAdminLogin(); });
+            buffer = '';
+            return;
+          }
+          if (state === 'await_id') {
+            if (!buffer) { setDisplay('Enter Student ID then press #'); return; }
+            var candidate = lookupStudent(buffer);
+            if (!candidate) {
+              setDisplay('<div class="actions"><div>Invalid ID. Please try again.</div><button class="btn" id="retry">OK</button></div>');
+              document.getElementById('retry').addEventListener('click', function(){ showPromptEnterId(); });
+              buffer = '';
+              return;
+            }
+            currentStudentId = buffer;
+            currentStudent = candidate;
+            if (getPoints(currentStudentId) === 0) setPoints(currentStudentId, 0);
+            buffer = '';
+            showStudentInfo();
+            return;
+          }
+          return;
+        }
+        // digits
+        buffer += key;
+        display.textContent = buffer;
+      });
+    });
+
+    // Holes
+    var map = { bottle: 'plastic', wrapper: 'paper', metal: 'metal' };
+    var award = { bottle: 1, wrapper: 0.5, metal: 2 };
+    var holes = document.querySelectorAll('.hole');
+    holes.forEach(function(hole) {
+      hole.setAttribute('tabindex', '0');
+      hole.addEventListener('click', handleHole);
+      hole.addEventListener('keydown', function(e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleHole.call(hole); } });
+      // drag & drop events
+      hole.addEventListener('dragover', function(e){ e.preventDefault(); });
+      hole.addEventListener('drop', function(e){
+        e.preventDefault();
+        var dtType = e.dataTransfer.getData('text/plain') || draggingType;
+        if (!dtType) return;
+        handleDrop(hole, dtType);
+      });
+    });
+
+    // Draggable items
+    var items = document.querySelectorAll('.items-panel .item');
+    items.forEach(function(it){
+      it.addEventListener('dragstart', function(e){ draggingType = it.getAttribute('data-type'); e.dataTransfer.setData('text/plain', draggingType); });
+      it.addEventListener('dragend', function(){ draggingType = null; });
+    });
+
+    function handleHole() {
+      var type = Array.prototype.find.call(this.classList, function(c){ return c === 'bottle' || c === 'wrapper' || c === 'metal'; });
+      var binId = map[type];
+      var bin = document.getElementById(binId);
+      if (!bin) return;
+      if (!currentStudentId || !currentStudent) {
+        setDisplay('<div class="actions"><div>Please sign in with a valid Student ID first.</div><button class="btn" id="ok">OK</button></div>');
+        document.getElementById('ok').addEventListener('click', showPromptEnterId);
+        return;
+      }
+      if (state === 'recycle_wait_insert') {
+        if (type !== pendingType) { setDisplay('<div class="actions"><div>Wrong hole. Try again.</div><button class="btn" id="back">Back</button></div>'); document.getElementById('back').addEventListener('click', showRecycleInsert); return; }
+        var pts = getPoints(currentStudentId) + award[type];
+        setPoints(currentStudentId, pts);
+        setDisplay('<div class="actions"><div>Thanks! +' + award[type] + ' pts</div><button class="btn" id="ok">OK</button></div>');
+        document.getElementById('ok').addEventListener('click', showMainMenu);
+        incrementBin(binId);
+      } else {
+        // Not in insert state; prompt to use menu to select an item first
+        showRecycleSelect();
+      } 
+      bin.classList.add('active');
+      setTimeout(function(){ bin.classList.remove('active'); }, 1200);
+    } 
+
+    function handleDrop(holeEl, droppedType) {
+      var holeType = Array.prototype.find.call(holeEl.classList, function(c){ return c === 'bottle' || c === 'wrapper' || c === 'metal'; });
+      var binId = map[holeType];
+      var bin = document.getElementById(binId);
+      if (!bin) return;
+      if (!currentStudentId || !currentStudent) {
+        setDisplay('<div class="actions"><div>Please sign in with a valid Student ID first.</div><button class="btn" id="ok">OK</button></div>');
+        document.getElementById('ok').addEventListener('click', showPromptEnterId);
+        return;
+      }
+      if (droppedType !== holeType) {
+        setDisplay('<div class="actions"><div>Wrong hole for ' + droppedType + '. Try again.</div><button class="btn" id="back">OK</button></div>');
+        document.getElementById('back').addEventListener('click', showMainMenu);
+        bin.classList.add('active');
+        setTimeout(function(){ bin.classList.remove('active'); }, 900);
+        return;
+      }
+      var pts = getPoints(currentStudentId) + award[droppedType];
+      setPoints(currentStudentId, pts);
+      setDisplay('<div class="actions"><div>Dropped ' + (droppedType==='bottle'?'Bottle':droppedType==='wrapper'?'Wrapper':'Metal Can') + ' ✓</div><div>+' + award[droppedType] + ' pts</div><button class="btn" id="ok">OK</button></div>');
+      document.getElementById('ok').addEventListener('click', showMainMenu);
+      bin.classList.add('active');
+      setTimeout(function(){ bin.classList.remove('active'); }, 1200);
+      incrementBin(binId);
+    }
+
+    // Initialize
+    showPromptEnterId();
+    updateBinBadges();
+    var adminBtn = document.getElementById('adminBtn');
+    if (adminBtn) { adminBtn.addEventListener('click', showAdminLogin); }
+  })();
+</script>
